@@ -1,10 +1,10 @@
 ---
 title: Git 03：GitHub 协作工作流
 date: 2026-08-21 12:45:00
-layout: post
+layout: page
+type: page
 comments: false
 aside: true
-toc: true
 top_img: /img/cover-learning.svg
 ---
 
