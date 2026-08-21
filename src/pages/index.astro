@@ -1,71 +1,60 @@
 ---
-import '../styles/global.css';
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const articles = (await getCollection('articles', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const lessons = await getCollection('learning');
+const tracks = new Set(lessons.map((lesson) => lesson.data.track));
+const latestArticles = articles.slice(0, 3);
 ---
 
-<!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="description" content="Blog of Even — research, engineering and learning notes." />
-    <title>Blog of Even</title>
-  </head>
-  <body>
-    <div class="container">
-      <header class="site-header">
-        <a class="brand" href="/">Blog of Even</a>
-        <nav>
-          <a href="/about">About</a>
-          <a href="/blog">Blog</a>
-          <a href="#projects">Projects</a>
-          <a href="https://github.com/wlh64113-cyber">GitHub</a>
-        </nav>
-      </header>
+<BaseLayout>
+  <main>
+    <section class="hero">
+      <p class="eyebrow">Learn · Build · Write · Repeat</p>
+      <h1>Blog of Even.</h1>
+      <p class="lead">
+        一个持续生长的技术学习系统：用学习路线组织知识，用文章沉淀理解，用项目验证实践。
+      </p>
+      <div class="actions">
+        <a class="button" href="/learn">Start learning</a>
+        <a class="button secondary" href="/blog">Read articles</a>
+      </div>
+    </section>
 
-      <main>
-        <section class="hero">
-          <p class="eyebrow">Research · AI · Bioinformatics · Engineering</p>
-          <h1>Hi, I’m Even.</h1>
-          <p class="lead">
-            这里记录我的科研、编程学习、论文阅读和项目实践。这个网站由 Astro 构建，并部署在 GitHub Pages。
-          </p>
-          <div class="actions">
-            <a class="button" href="/blog">Read the blog</a>
-            <a class="button secondary" href="https://github.com/wlh64113-cyber">View GitHub</a>
-          </div>
-        </section>
+    <section class="section">
+      <h2>Two systems, one knowledge base</h2>
+      <div class="grid">
+        <a class="card card-link" href="/learn">
+          <p class="eyebrow">Learning System</p>
+          <h3>{tracks.size} Tracks · {lessons.length} Lessons</h3>
+          <p>按学习路线组织课程，记录完成状态、预计学习时间和阶段进度。</p>
+        </a>
+        <a class="card card-link" href="/blog">
+          <p class="eyebrow">Article System</p>
+          <h3>{articles.length} Articles</h3>
+          <p>Markdown 驱动的文章系统，支持分类、标签、搜索以及独立详情页。</p>
+        </a>
+        <a class="card card-link" href="https://github.com/wlh64113-cyber">
+          <p class="eyebrow">Projects</p>
+          <h3>Build in public</h3>
+          <p>让知识最终落到代码、实验和工程项目，而不是停留在收藏夹。</p>
+        </a>
+      </div>
+    </section>
 
-        <section class="section" id="projects">
-          <h2>What I’m working on</h2>
-          <div class="grid">
-            <article class="card">
-              <h3>Enzyme–Reaction Learning</h3>
-              <p>酶与生化反应的联合表示、检索与多模态建模。</p>
-            </article>
-            <article class="card">
-              <h3>Protein Representation</h3>
-              <p>蛋白序列、结构与文本模态的表示学习与融合。</p>
-            </article>
-            <article class="card">
-              <h3>Engineering Notes</h3>
-              <p>Git、Linux、FastAPI、MySQL 与日常开发学习记录。</p>
-            </article>
-          </div>
-        </section>
-
-        <section class="section">
-          <h2>Latest notes</h2>
-          <div class="grid">
-            <article class="card">
-              <p class="eyebrow">Getting started</p>
-              <h3>Blog of Even is online</h3>
-              <p>这是博客的第一版。后续会逐步加入 Markdown 文章、标签、论文阅读和项目页面。</p>
-            </article>
-          </div>
-        </section>
-      </main>
-
-      <footer>© 2026 Even · Built with Astro & GitHub Pages</footer>
-    </div>
-  </body>
-</html>
+    <section class="section">
+      <h2>Latest articles</h2>
+      <div class="grid">
+        {latestArticles.map((article) => (
+          <a class="card card-link" href={`/blog/${article.id}/`}>
+            <p class="eyebrow">{article.data.category}</p>
+            <h3>{article.data.title}</h3>
+            <p>{article.data.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+  </main>
+</BaseLayout>
