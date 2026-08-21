@@ -1,0 +1,278 @@
+nav:
+  logo:
+  display_title: true
+  display_post_title: true
+  fixed: false
+
+menu:
+  首页: / || fas fa-home
+  文章||fas fa-feather-alt:
+    归档: /archives/ || fas fa-archive
+    标签: /tags/ || fas fa-tags
+    分类: /categories/ || fas fa-folder-open
+  学习系统: /learn/ || fas fa-graduation-cap
+  关于: /about/ || fas fa-user
+
+code_blocks:
+  theme: darker
+  macStyle: true
+  height_limit: 320
+  word_wrap: false
+  copy: true
+  language: true
+  shrink: false
+  fullpage: true
+
+social:
+  fab fa-github: https://github.com/wlh64113-cyber || GitHub || '#24292e'
+
+favicon: /img/even-avatar.svg
+avatar:
+  img: /img/even-avatar.svg
+  effect: true
+
+disable_top_img: false
+default_top_img: /img/even-banner.svg
+index_img: /img/even-banner.svg
+archive_img: /img/even-banner.svg
+tag_img: /img/even-banner.svg
+category_img: /img/even-banner.svg
+footer_img: false
+background: '#edf4ef'
+
+cover:
+  index_enable: true
+  aside_enable: true
+  archives_enable: true
+  default_cover:
+    - /img/cover-code.svg
+    - /img/cover-research.svg
+    - /img/cover-learning.svg
+
+post_meta:
+  page:
+    date_type: created
+    date_format: date
+    categories: true
+    tags: true
+    label: true
+  post:
+    position: left
+    date_type: both
+    date_format: date
+    categories: true
+    tags: true
+    label: true
+
+index_site_info_top: 43%
+index_top_img_height: 100vh
+subtitle:
+  enable: true
+  effect: true
+  typed_option:
+  source: false
+  sub:
+    - 技术学习 · 科研阅读 · 工程实践
+    - 把零散知识沉淀成长期资产
+    - Stay hungry. Stay building.
+
+index_layout: 3
+index_post_content:
+  method: 2
+  length: 260
+
+toc:
+  post: true
+  page: false
+  number: true
+  expand: false
+  style_simple: false
+  scroll_percent: true
+
+post_copyright:
+  enable: true
+  decode: false
+  author_href: https://github.com/wlh64113-cyber
+  license: CC BY-NC-SA 4.0
+  license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+related_post:
+  enable: true
+  limit: 6
+  date_type: created
+post_pagination: 1
+
+footer:
+  owner:
+    enable: true
+    since: 2026
+  copyright:
+    enable: true
+    version: true
+  custom_text: 持续学习 · 持续输出 · 持续构建
+
+aside:
+  enable: true
+  hide: false
+  button: true
+  mobile: true
+  position: right
+  display:
+    archive: true
+    tag: true
+    category: true
+  card_author:
+    enable: true
+    description: 记录技术学习、科研阅读与工程实践。
+    button:
+      enable: true
+      icon: fab fa-github
+      text: GitHub
+      link: https://github.com/wlh64113-cyber
+  card_announcement:
+    enable: true
+    content: 欢迎来到 Blog of Even。这里既是技术博客，也是持续生长的个人学习系统。
+  card_recent_post:
+    enable: true
+    limit: 5
+    sort: date
+  card_newest_comments:
+    enable: false
+  card_categories:
+    enable: true
+    limit: 8
+    expand: none
+  card_tags:
+    enable: true
+    limit: 30
+    color: false
+    orderby: name
+    order: 1
+  card_archives:
+    enable: true
+    type: monthly
+    format: YYYY年MM月
+    order: -1
+    limit: 8
+  card_post_series:
+    enable: true
+    series_title: false
+    orderBy: date
+    order: 1
+  card_webinfo:
+    enable: true
+    post_count: true
+    last_push_date: true
+    runtime_date: 8/21/2026 00:00:00
+
+readmode: true
+darkmode:
+  enable: true
+  button: true
+  autoChangeMode: false
+rightside_scroll_percent: true
+rightside_config_animation: true
+
+copy:
+  enable: true
+  copyright:
+    enable: false
+
+wordcount:
+  enable: true
+  post_wordcount: true
+  min2read: true
+  total_wordcount: true
+
+busuanzi:
+  site_uv: false
+  site_pv: false
+  page_pv: false
+
+math:
+  use: mathjax
+  per_page: false
+  hide_scrollbar: false
+  mathjax:
+    enableMenu: true
+    tags: none
+
+search:
+  use: local_search
+  placeholder: 搜索文章、分类或标签…
+  local_search:
+    preload: true
+    top_n_per_article: 2
+    unescape: false
+    pagination:
+      enable: true
+      hitsPerPage: 8
+    CDN:
+
+share:
+  use:
+
+comments:
+  use:
+  text: true
+  lazyload: false
+  count: false
+  card_post_count: false
+
+theme_color:
+  enable: true
+  main: '#8fbc8f'
+  paginator: '#8fbc8f'
+  button_hover: '#6f9e70'
+  text_selection: '#8fbc8f'
+  link_color: '#7f9f82'
+  meta_color: '#858585'
+  hr_color: '#c7dec7'
+  code_foreground: '#F47466'
+  code_background: 'rgba(27,31,35,.05)'
+  toc_color: '#8fbc8f'
+  blockquote_padding_color: '#8fbc8f'
+  blockquote_background_color: '#8fbc8f'
+  scrollbar_color: '#8fbc8f'
+  meta_theme_color_light: '#ffffff'
+  meta_theme_color_dark: '#0d0d0d'
+
+category_ui: default
+tag_ui: default
+rounded_corners_ui: true
+text_align_justify: false
+mask:
+  header: true
+  footer: true
+preloader:
+  enable: false
+enter_transitions: true
+display_mode: light
+
+font:
+  global_font_size: 15.5px
+  code_font_size: 14.5px
+  font_family: '-apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif'
+  code_font_family: 'Consolas, Menlo, Monaco, monospace'
+
+lightbox: fancybox
+lazyload:
+  enable: true
+  native: true
+  field: site
+  placeholder:
+  blur: false
+pjax:
+  enable: false
+instantpage: true
+
+inject:
+  head:
+    - <link rel="stylesheet" href="/css/even.css">
+  bottom:
+    - <script src="/js/learning.js"></script>
+
+CDN:
+  internal_provider: local
+  third_party_provider: jsdelivr
+  version: true
