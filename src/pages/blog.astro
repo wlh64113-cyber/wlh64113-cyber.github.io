@@ -24,24 +24,31 @@ const categoryLabel = (category: string) => category === 'Engineering' ? '工程
       </div>
 
       <div id="post-feed" class="post-feed">
-        {articles.map((article) => (
+        {articles.map((article, index) => (
           <article
             class="post-card"
             data-category={article.data.category}
             data-tags={article.data.tags.join('|')}
             data-search={`${article.data.title} ${article.data.description} ${article.data.category} ${article.data.tags.join(' ')}`.toLowerCase()}
           >
-            <div class="post-meta">
-              <span>发表于 {article.data.pubDate.toLocaleDateString('zh-CN')}</span>
-              <span>·</span>
-              <a href={`/blog?category=${encodeURIComponent(article.data.category)}`}>{categoryLabel(article.data.category)}</a>
+            <a class="post-cover" href={`/blog/${article.id}/`} aria-label={`阅读 ${article.data.title}`}>
+              <span class="post-cover-mark">{article.data.category.slice(0, 1).toUpperCase()}</span>
+            </a>
+            <div class="post-card-body">
+              <div class="post-meta">
+                <span>发表于 {article.data.pubDate.toLocaleDateString('zh-CN')}</span>
+                <span>·</span>
+                <a href={`/blog?category=${encodeURIComponent(article.data.category)}`}>{categoryLabel(article.data.category)}</a>
+                <span>·</span>
+                <span>第 {index + 1} 篇</span>
+              </div>
+              <h2><a href={`/blog/${article.id}/`}>{article.data.title}</a></h2>
+              <p class="post-excerpt">{article.data.description}</p>
+              <div class="post-tags">
+                {article.data.tags.map((tag) => <a href={`/blog?tag=${encodeURIComponent(tag)}`}>#{tag}</a>)}
+              </div>
+              <a class="read-more" href={`/blog/${article.id}/`}>阅读全文 →</a>
             </div>
-            <h2><a href={`/blog/${article.id}/`}>{article.data.title}</a></h2>
-            <p class="post-excerpt">{article.data.description}</p>
-            <div class="post-tags">
-              {article.data.tags.map((tag) => <a href={`/blog?tag=${encodeURIComponent(tag)}`}>#{tag}</a>)}
-            </div>
-            <a class="read-more" href={`/blog/${article.id}/`}>阅读全文 →</a>
           </article>
         ))}
       </div>
