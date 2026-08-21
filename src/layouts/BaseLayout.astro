@@ -1,0 +1,40 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Blog of Even',
+  description = '技术学习、科研笔记与工程实践。',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <div class="container">
+      <header class="site-header">
+        <a class="brand" href="/">Blog of Even</a>
+        <nav>
+          <a href="/learn">Learn</a>
+          <a href="/blog">Articles</a>
+          <a href="/about">About</a>
+          <a href="https://github.com/wlh64113-cyber" target="_blank" rel="noreferrer">GitHub</a>
+        </nav>
+      </header>
+
+      <slot />
+
+      <footer>© 2026 Even · Built with Astro & GitHub Pages</footer>
+    </div>
+  </body>
+</html>
