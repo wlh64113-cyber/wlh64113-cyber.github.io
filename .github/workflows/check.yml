@@ -1,4 +1,4 @@
-name: Check Astro build
+name: Check Hexo build
 
 on:
   pull_request:
