@@ -6,76 +6,97 @@ const lessons = (await getCollection('learning'))
   .sort((a, b) => a.data.track.localeCompare(b.data.track) || a.data.order - b.data.order);
 
 const tracks = [...new Set(lessons.map((lesson) => lesson.data.track))];
+const levelLabel = (level: string) => ({ beginner: '入门', intermediate: '进阶', advanced: '高级' }[level] || level);
 ---
 
-<BaseLayout title="Learn · Blog of Even" description="结构化技术学习路线与进度追踪。">
+<BaseLayout title="学习系统｜Blog of Even" description="结构化技术学习路线、课程内容与学习进度追踪。">
   <main class="page">
-    <p class="eyebrow">Learning System</p>
-    <h1>Learn</h1>
-    <p class="lead">把“看过”变成“学完”：按学习路线组织知识，并记录每一节的完成进度。</p>
+    <header class="page-hero compact">
+      <span class="section-kicker">学习系统</span>
+      <h1>技术学习路线</h1>
+      <p class="lead">把“看过”变成“学完”：按学习路线组织知识，并记录每一节的完成状态与学习进度。</p>
+      <div class="page-stats">
+        <span><strong>{tracks.length}</strong> 条学习路线</span>
+        <span><strong>{lessons.length}</strong> 节学习内容</span>
+      </div>
+    </header>
 
     <section class="learning-dashboard">
-      <div>
-        <span class="metric-label">Overall progress</span>
-        <strong id="progress-text">0 / {lessons.length}</strong>
+      <div class="dashboard-copy">
+        <span class="metric-label">总体学习进度</span>
+        <strong id="progress-text">已完成 0 / {lessons.length}</strong>
+        <p>进度保存在当前浏览器中，完成课程后会自动更新。</p>
       </div>
-      <div class="progress-track" aria-label="学习进度">
-        <div id="progress-fill" class="progress-fill"></div>
+      <div class="dashboard-progress">
+        <span id="progress-percent">0%</span>
+        <div class="progress-track" aria-label="学习进度">
+          <div id="progress-fill" class="progress-fill"></div>
+        </div>
       </div>
     </section>
 
-    <div class="toolbar">
-      <input id="lesson-search" class="search-input" type="search" placeholder="搜索课程、标签或学习路线…" />
-      <select id="track-filter" class="select-input">
-        <option value="all">全部学习路线</option>
-        {tracks.map((track) => <option value={track}>{track}</option>)}
-      </select>
-    </div>
+    <section class="content-panel">
+      <div class="toolbar toolbar-panel">
+        <label class="search-wrap">
+          <span aria-hidden="true">⌕</span>
+          <input id="lesson-search" class="search-input" type="search" placeholder="搜索课程、标签或学习路线…" />
+        </label>
+        <select id="track-filter" class="select-input" aria-label="筛选学习路线">
+          <option value="all">全部学习路线</option>
+          {tracks.map((track) => <option value={track}>{track}</option>)}
+        </select>
+      </div>
 
-    <div id="lesson-list">
-      {tracks.map((track) => (
-        <section class="track-section" data-track-section={track}>
-          <div class="track-heading">
-            <div>
-              <p class="eyebrow">Track</p>
-              <h2>{track}</h2>
+      <div id="lesson-list">
+        {tracks.map((track) => (
+          <section class="track-section" data-track-section={track}>
+            <div class="track-heading">
+              <div>
+                <span class="section-kicker">学习路线</span>
+                <h2>{track}</h2>
+              </div>
+              <span class="track-count">{lessons.filter((lesson) => lesson.data.track === track).length} 节课程</span>
             </div>
-            <span>{lessons.filter((lesson) => lesson.data.track === track).length} lessons</span>
-          </div>
 
-          <div class="learning-list">
-            {lessons.filter((lesson) => lesson.data.track === track).map((lesson) => (
-              <article
-                class="learning-row"
-                data-learning-id={lesson.id}
-                data-track={lesson.data.track}
-                data-search={`${lesson.data.title} ${lesson.data.description} ${lesson.data.track} ${lesson.data.tags.join(' ')}`.toLowerCase()}
-              >
-                <label class="complete-control" title="标记完成">
-                  <input class="complete-toggle" type="checkbox" value={lesson.id} />
-                  <span></span>
-                </label>
-                <a class="learning-link" href={`/learn/${lesson.id}/`}>
-                  <div class="lesson-order">{String(lesson.data.order).padStart(2, '0')}</div>
-                  <div class="lesson-content">
-                    <div class="meta-line">
-                      <span>{lesson.data.level}</span>
-                      {lesson.data.estimatedMinutes && <span>≈ {lesson.data.estimatedMinutes} min</span>}
+            <div class="learning-list">
+              {lessons.filter((lesson) => lesson.data.track === track).map((lesson) => (
+                <article
+                  class="learning-row"
+                  data-learning-id={lesson.id}
+                  data-track={lesson.data.track}
+                  data-search={`${lesson.data.title} ${lesson.data.description} ${lesson.data.track} ${lesson.data.tags.join(' ')}`.toLowerCase()}
+                >
+                  <label class="complete-control" title="标记完成">
+                    <input class="complete-toggle" type="checkbox" value={lesson.id} />
+                    <span></span>
+                  </label>
+                  <a class="learning-link" href={`/learn/${lesson.id}/`}>
+                    <div class="lesson-order">{String(lesson.data.order).padStart(2, '0')}</div>
+                    <div class="lesson-content">
+                      <div class="meta-line">
+                        <span>{levelLabel(lesson.data.level)}</span>
+                        {lesson.data.estimatedMinutes && <span>约 {lesson.data.estimatedMinutes} 分钟</span>}
+                      </div>
+                      <h3>{lesson.data.title}</h3>
+                      <p>{lesson.data.description}</p>
+                      <div class="tag-list">
+                        {lesson.data.tags.map((tag) => <span class="tag">#{tag}</span>)}
+                      </div>
                     </div>
-                    <h3>{lesson.data.title}</h3>
-                    <p>{lesson.data.description}</p>
-                    <div class="tag-list">
-                      {lesson.data.tags.map((tag) => <span class="tag">#{tag}</span>)}
-                    </div>
-                  </div>
-                  <span class="arrow">→</span>
-                </a>
-              </article>
-            ))}
-          </div>
-        </section>
-      ))}
-    </div>
+                    <span class="row-action">开始学习 <span aria-hidden="true">→</span></span>
+                  </a>
+                </article>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+
+      <div id="lesson-empty" class="empty-state" hidden>
+        <strong>没有找到匹配的学习内容</strong>
+        <p>可以尝试更换关键词或学习路线。</p>
+      </div>
+    </section>
   </main>
 
   <script>
@@ -85,8 +106,10 @@ const tracks = [...new Set(lessons.map((lesson) => lesson.data.track))];
     const trackSections = [...document.querySelectorAll('.track-section')];
     const progressText = document.querySelector('#progress-text');
     const progressFill = document.querySelector('#progress-fill');
+    const progressPercent = document.querySelector('#progress-percent');
     const search = document.querySelector('#lesson-search');
     const trackFilter = document.querySelector('#track-filter');
+    const empty = document.querySelector('#lesson-empty');
 
     function loadCompleted() {
       try {
@@ -105,8 +128,10 @@ const tracks = [...new Set(lessons.map((lesson) => lesson.data.track))];
       });
       const total = toggles.length;
       const done = toggles.filter((toggle) => toggle.checked).length;
-      if (progressText) progressText.textContent = `${done} / ${total}`;
-      if (progressFill) progressFill.style.width = `${total ? (done / total) * 100 : 0}%`;
+      const percent = total ? Math.round((done / total) * 100) : 0;
+      if (progressText) progressText.textContent = `已完成 ${done} / ${total}`;
+      if (progressPercent) progressPercent.textContent = `${percent}%`;
+      if (progressFill) progressFill.style.width = `${percent}%`;
     }
 
     toggles.forEach((toggle) => toggle.addEventListener('change', () => {
@@ -119,17 +144,20 @@ const tracks = [...new Set(lessons.map((lesson) => lesson.data.track))];
     function filterLessons() {
       const query = (search?.value || '').trim().toLowerCase();
       const activeTrack = trackFilter?.value || 'all';
+      let visibleCount = 0;
 
       rows.forEach((row) => {
         const matchesQuery = !query || row.dataset.search?.includes(query);
         const matchesTrack = activeTrack === 'all' || row.dataset.track === activeTrack;
         row.hidden = !(matchesQuery && matchesTrack);
+        if (!row.hidden) visibleCount += 1;
       });
 
       trackSections.forEach((section) => {
         const visible = [...section.querySelectorAll('.learning-row')].some((row) => !row.hidden);
         section.hidden = !visible;
       });
+      if (empty) empty.hidden = visibleCount !== 0;
     }
 
     search?.addEventListener('input', filterLessons);
