@@ -1,10 +1,10 @@
 ---
 title: Git 02：分支与合并
 date: 2026-08-21 12:45:00
-layout: post
+layout: page
+type: page
 comments: false
 aside: true
-toc: true
 top_img: /img/cover-learning.svg
 ---
 
