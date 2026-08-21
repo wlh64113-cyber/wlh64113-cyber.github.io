@@ -4,7 +4,7 @@ date: 2026-08-21 12:45:00
 type: page
 comments: false
 aside: true
-top_img: /img/cover-learning.svg
+top_img: /img/01.jpg
 ---
 
 <div class="learning-system" data-learning-system>

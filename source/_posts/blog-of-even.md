@@ -11,7 +11,7 @@ tags:
   - Blog
 description: 记录这个技术博客从 GitHub Pages 到 Hexo + Butterfly 的搭建与迁移过程。
 cover: /img/cover-code.svg
-top_img: /img/even-banner.svg
+top_img: /img/01.jpg
 ---
 
 这是 **Blog of Even** 的第一篇正式文章。

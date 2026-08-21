@@ -32,11 +32,11 @@ avatar:
   effect: true
 
 disable_top_img: false
-default_top_img: /img/even-banner.svg
+default_top_img: /img/01.jpg
 index_img: /img/01.jpg
-archive_img: /img/even-banner.svg
-tag_img: /img/even-banner.svg
-category_img: /img/even-banner.svg
+archive_img: /img/01.jpg
+tag_img: /img/01.jpg
+category_img: /img/01.jpg
 footer_img: false
 background: '#edf4ef'
 

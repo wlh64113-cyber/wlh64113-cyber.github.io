@@ -3,7 +3,7 @@ title: 关于
 date: 2026-08-21 12:45:00
 type: page
 comments: false
-top_img: /img/even-banner.svg
+top_img: /img/01.jpg
 ---
 
 ## Blog of Even
