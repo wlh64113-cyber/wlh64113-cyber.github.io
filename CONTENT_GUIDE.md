@@ -1,56 +1,99 @@
 # Blog of Even 内容维护指南
 
-这个站点包含两个内容系统：Articles（文章）和 Learning（学习路线）。
+站点现在使用 **Hexo + Butterfly**。核心仍然分为两个内容系统：技术文章与技术学习系统。
 
-## 新增一篇文章
+## 新增一篇技术文章
 
-在 `src/content/articles/` 下新建 Markdown 文件，例如：
+在 `source/_posts/` 下新建 Markdown 文件，例如：
 
 ```text
-src/content/articles/mysql-architecture.md
+source/_posts/mysql-architecture.md
 ```
 
-文件头部使用：
+推荐 Front Matter：
 
 ```yaml
 ---
-title: "MySQL 体系结构"
-description: "从连接层到存储引擎理解 MySQL 的整体架构。"
-pubDate: 2026-08-21
-category: "Backend"
-tags: ["MySQL", "Database"]
-draft: false
+title: MySQL 体系结构
+date: 2026-08-21 13:00:00
+updated: 2026-08-21 13:00:00
+categories:
+  - 后端开发
+tags:
+  - MySQL
+  - Database
+description: 从连接层到存储引擎理解 MySQL 的整体架构。
+cover: /img/cover-code.svg
 ---
 ```
 
-正文直接写 Markdown。提交后会自动出现在 `/blog`，详情页地址由文件名生成。
+正文直接使用 Markdown。提交到 `main` 后，GitHub Actions 会自动生成并发布。
 
-## 新增一节学习内容
+## 新增学习内容
 
-在 `src/content/learning/` 下新建 Markdown 文件，例如：
+学习系统入口位于：
 
 ```text
-src/content/learning/mysql-01-overview.md
+source/learn/index.md
 ```
 
-文件头部使用：
+单节课程使用独立页面，例如：
+
+```text
+source/learn/mysql-01-overview/index.md
+```
+
+推荐 Front Matter：
 
 ```yaml
 ---
-title: "MySQL 01：体系结构总览"
-description: "理解 Server 层和存储引擎层。"
-track: "MySQL"
-order: 1
-level: "beginner"
-tags: ["MySQL", "Architecture"]
-estimatedMinutes: 45
+title: MySQL 01：体系结构总览
+layout: post
+comments: false
+aside: true
+toc: true
+top_img: /img/cover-learning.svg
 ---
 ```
 
-`track` 相同的内容会自动归入同一条学习路线，`order` 决定顺序。
+课程正文仍然使用 Markdown。新增课程后，同时在 `source/learn/index.md` 中增加一张课程卡片，并给复选框设置唯一的 `data-lesson-check`。
 
 ## 学习进度
 
-学习完成状态存储在浏览器的 `localStorage` 中，不需要后端数据库。不同浏览器/设备之间暂时不会同步。
+学习完成状态由：
 
-未来如果需要账号、跨设备同步、收藏、评论、全文搜索，可以再引入 Supabase / Firebase / 自建 API。
+```text
+source/js/learning.js
+```
+
+存储在浏览器 `localStorage` 中，不需要后端数据库。不同浏览器和设备之间暂时不会同步。
+
+## 标签与分类
+
+Butterfly / Hexo 会自动根据文章 Front Matter 生成标签和分类内容：
+
+- `/archives/`：文章归档
+- `/tags/`：标签
+- `/categories/`：分类
+
+## 主题配置
+
+站点配置：
+
+```text
+_config.yml
+```
+
+Butterfly 配置：
+
+```text
+_config.butterfly.yml
+```
+
+自定义样式：
+
+```text
+source/css/even.css
+```
+
+不要直接修改 npm 安装的 Butterfly 主题源码，这样后续可以安全升级主题版本。
