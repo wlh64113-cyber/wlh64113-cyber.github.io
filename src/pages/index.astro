@@ -12,46 +12,62 @@ const categoryLabel = (category: string) => category === 'Engineering' ? '工程
 ---
 
 <BaseLayout>
-  <section class="blog-home-intro">
-    <h1>Blog of Even</h1>
-    <p>记录技术学习、科研阅读与工程实践。把零散的输入整理成可检索、可复用、可持续生长的知识。</p>
-    <div class="blog-home-stats">
-      <span>文章 <strong>{articles.length}</strong></span>
-      <span>标签 <strong>{tags.size}</strong></span>
-      <span>分类 <strong>{categories.size}</strong></span>
-      <span>学习内容 <strong>{lessons.length}</strong></span>
+  <section class="cyborg-hero">
+    <div class="cyborg-hero-content">
+      <h1>Blog of Even</h1>
+      <p class="subtitle">技术学习 · 科研阅读 · 工程实践 · 长期知识沉淀</p>
+      <p class="hero-type-line">把零散知识连接起来，把短期记忆变成长期资产。</p>
     </div>
+    <a class="hero-down" href="#content" aria-label="向下浏览">⌄</a>
   </section>
+
+  <p class="home-welcome" id="content">
+    欢迎来到我的个人技术空间。这里记录学习路径、技术文章与实践总结，也持续构建自己的学习系统。
+  </p>
 
   <div class="blog-layout">
     <main class="blog-main">
       <div class="post-feed">
-        {articles.map((article) => (
+        {articles.map((article, index) => (
           <article class="post-card">
-            <div class="post-meta">
-              <span>发表于 {article.data.pubDate.toLocaleDateString('zh-CN')}</span>
-              <span>·</span>
-              <a href={`/blog?category=${encodeURIComponent(article.data.category)}`}>{categoryLabel(article.data.category)}</a>
+            <a class="post-cover" href={`/blog/${article.id}/`} aria-label={`阅读 ${article.data.title}`}>
+              <span class="post-cover-mark">{article.data.category.slice(0, 1).toUpperCase()}</span>
+            </a>
+            <div class="post-card-body">
+              <div class="post-meta">
+                <span>发表于 {article.data.pubDate.toLocaleDateString('zh-CN')}</span>
+                <span>·</span>
+                <a href={`/blog?category=${encodeURIComponent(article.data.category)}`}>{categoryLabel(article.data.category)}</a>
+                <span>·</span>
+                <span>第 {index + 1} 篇</span>
+              </div>
+              <h2><a href={`/blog/${article.id}/`}>{article.data.title}</a></h2>
+              <p class="post-excerpt">{article.data.description}</p>
+              <div class="post-tags">
+                {article.data.tags.map((tag) => <a href={`/blog?tag=${encodeURIComponent(tag)}`}>#{tag}</a>)}
+              </div>
+              <a class="read-more" href={`/blog/${article.id}/`}>阅读全文 →</a>
             </div>
-            <h2><a href={`/blog/${article.id}/`}>{article.data.title}</a></h2>
-            <p class="post-excerpt">{article.data.description}</p>
-            <div class="post-tags">
-              {article.data.tags.map((tag) => <a href={`/blog?tag=${encodeURIComponent(tag)}`}>#{tag}</a>)}
-            </div>
-            <a class="read-more" href={`/blog/${article.id}/`}>阅读全文 →</a>
           </article>
         ))}
 
         {articles.length === 0 && (
           <article class="post-card">
-            <h2>文章正在整理中</h2>
-            <p class="post-excerpt">可以从学习系统开始浏览，后续技术文章会持续补充。</p>
-            <a class="read-more" href="/learn">进入学习系统 →</a>
+            <div class="post-cover"><span class="post-cover-mark">E</span></div>
+            <div class="post-card-body">
+              <h2>文章正在整理中</h2>
+              <p class="post-excerpt">可以先从学习系统开始浏览，后续技术文章会持续补充。</p>
+              <a class="read-more" href="/learn">进入学习系统 →</a>
+            </div>
           </article>
         )}
       </div>
     </main>
 
     <Sidebar />
+  </div>
+
+  <div hidden>
+    {articles.length} 篇文章 · {tags.size} 个标签 · {categories.size} 个分类 · {lessons.length} 节学习内容
   </div>
 </BaseLayout>
