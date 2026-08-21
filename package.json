@@ -6,8 +6,11 @@
   "scripts": {
     "clean": "hexo clean",
     "dev": "hexo server",
-    "build": "hexo generate",
+    "build": "hexo generate --bail",
     "server": "hexo server"
+  },
+  "hexo": {
+    "version": "8.1.2"
   },
   "dependencies": {
     "hexo": "^8.1.2",
