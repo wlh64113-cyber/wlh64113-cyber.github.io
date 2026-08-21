@@ -5,7 +5,7 @@ layout: page
 type: page
 comments: false
 aside: true
-top_img: /img/cover-learning.svg
+top_img: /img/01.jpg
 ---
 
 ## 学习目标
