@@ -1,0 +1,71 @@
+---
+import '../styles/global.css';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content="Blog of Even — research, engineering and learning notes." />
+    <title>Blog of Even</title>
+  </head>
+  <body>
+    <div class="container">
+      <header class="site-header">
+        <a class="brand" href="/">Blog of Even</a>
+        <nav>
+          <a href="/about">About</a>
+          <a href="/blog">Blog</a>
+          <a href="#projects">Projects</a>
+          <a href="https://github.com/wlh64113-cyber">GitHub</a>
+        </nav>
+      </header>
+
+      <main>
+        <section class="hero">
+          <p class="eyebrow">Research · AI · Bioinformatics · Engineering</p>
+          <h1>Hi, I’m Even.</h1>
+          <p class="lead">
+            这里记录我的科研、编程学习、论文阅读和项目实践。这个网站由 Astro 构建，并部署在 GitHub Pages。
+          </p>
+          <div class="actions">
+            <a class="button" href="/blog">Read the blog</a>
+            <a class="button secondary" href="https://github.com/wlh64113-cyber">View GitHub</a>
+          </div>
+        </section>
+
+        <section class="section" id="projects">
+          <h2>What I’m working on</h2>
+          <div class="grid">
+            <article class="card">
+              <h3>Enzyme–Reaction Learning</h3>
+              <p>酶与生化反应的联合表示、检索与多模态建模。</p>
+            </article>
+            <article class="card">
+              <h3>Protein Representation</h3>
+              <p>蛋白序列、结构与文本模态的表示学习与融合。</p>
+            </article>
+            <article class="card">
+              <h3>Engineering Notes</h3>
+              <p>Git、Linux、FastAPI、MySQL 与日常开发学习记录。</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Latest notes</h2>
+          <div class="grid">
+            <article class="card">
+              <p class="eyebrow">Getting started</p>
+              <h3>Blog of Even is online</h3>
+              <p>这是博客的第一版。后续会逐步加入 Markdown 文章、标签、论文阅读和项目页面。</p>
+            </article>
+          </div>
+        </section>
+      </main>
+
+      <footer>© 2026 Even · Built with Astro & GitHub Pages</footer>
+    </div>
+  </body>
+</html>
