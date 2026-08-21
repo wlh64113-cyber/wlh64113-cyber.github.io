@@ -6,44 +6,61 @@ const articles = (await getCollection('articles', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
 const categories = [...new Set(articles.map((article) => article.data.category))];
+const categoryLabel = (category: string) => category === 'Engineering' ? '工程实践' : category;
 ---
 
-<BaseLayout title="Articles · Blog of Even" description="技术文章、科研笔记与工程实践。">
+<BaseLayout title="技术文章｜Blog of Even" description="技术文章、学习总结与工程实践沉淀。">
   <main class="page">
-    <p class="eyebrow">Knowledge Base</p>
-    <h1>Articles</h1>
-    <p class="lead">把零散学习记录沉淀为长期可检索、可维护的技术文章。</p>
-
-    <div class="toolbar">
-      <input id="article-search" class="search-input" type="search" placeholder="搜索标题、分类或标签…" />
-      <div class="chips">
-        <button class="chip active" data-category="all">All</button>
-        {categories.map((category) => <button class="chip" data-category={category}>{category}</button>)}
+    <header class="page-hero compact">
+      <span class="section-kicker">文章系统</span>
+      <h1>技术文章</h1>
+      <p class="lead">把零散学习记录整理成可检索、可维护、可长期复用的知识文章。</p>
+      <div class="page-stats">
+        <span><strong>{articles.length}</strong> 篇已发布文章</span>
+        <span><strong>{categories.length}</strong> 个内容分类</span>
       </div>
-    </div>
+    </header>
 
-    <section id="article-list" class="article-list">
-      {articles.map((article) => (
-        <a
-          class="article-row"
-          href={`/blog/${article.id}/`}
-          data-category={article.data.category}
-          data-search={`${article.data.title} ${article.data.description} ${article.data.category} ${article.data.tags.join(' ')}`.toLowerCase()}
-        >
-          <div>
-            <div class="meta-line">
-              <span>{article.data.pubDate.toISOString().slice(0, 10)}</span>
-              <span>{article.data.category}</span>
+    <section class="content-panel">
+      <div class="toolbar toolbar-panel">
+        <label class="search-wrap">
+          <span aria-hidden="true">⌕</span>
+          <input id="article-search" class="search-input" type="search" placeholder="搜索标题、分类或标签…" />
+        </label>
+        <div class="chips" aria-label="文章分类">
+          <button class="chip active" data-category="all">全部</button>
+          {categories.map((category) => <button class="chip" data-category={category}>{categoryLabel(category)}</button>)}
+        </div>
+      </div>
+
+      <section id="article-list" class="article-list">
+        {articles.map((article) => (
+          <a
+            class="article-row"
+            href={`/blog/${article.id}/`}
+            data-category={article.data.category}
+            data-search={`${article.data.title} ${article.data.description} ${article.data.category} ${article.data.tags.join(' ')}`.toLowerCase()}
+          >
+            <div class="article-row-main">
+              <div class="meta-line">
+                <span>{article.data.pubDate.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                <span>{categoryLabel(article.data.category)}</span>
+              </div>
+              <h2>{article.data.title}</h2>
+              <p>{article.data.description}</p>
+              <div class="tag-list">
+                {article.data.tags.map((tag) => <span class="tag">#{tag}</span>)}
+              </div>
             </div>
-            <h2>{article.data.title}</h2>
-            <p>{article.data.description}</p>
-            <div class="tag-list">
-              {article.data.tags.map((tag) => <span class="tag">#{tag}</span>)}
-            </div>
-          </div>
-          <span class="arrow">→</span>
-        </a>
-      ))}
+            <span class="row-action">阅读全文 <span aria-hidden="true">→</span></span>
+          </a>
+        ))}
+      </section>
+
+      <div id="article-empty" class="empty-state" hidden>
+        <strong>没有找到匹配的文章</strong>
+        <p>换一个关键词或分类试试。</p>
+      </div>
     </section>
   </main>
 
@@ -51,15 +68,19 @@ const categories = [...new Set(articles.map((article) => article.data.category))
     const search = document.querySelector('#article-search');
     const rows = [...document.querySelectorAll('.article-row')];
     const chips = [...document.querySelectorAll('.chip')];
+    const empty = document.querySelector('#article-empty');
     let category = 'all';
 
     function filterArticles() {
       const query = (search?.value || '').trim().toLowerCase();
+      let visibleCount = 0;
       rows.forEach((row) => {
         const matchesQuery = !query || row.dataset.search?.includes(query);
         const matchesCategory = category === 'all' || row.dataset.category === category;
         row.hidden = !(matchesQuery && matchesCategory);
+        if (!row.hidden) visibleCount += 1;
       });
+      if (empty) empty.hidden = visibleCount !== 0;
     }
 
     search?.addEventListener('input', filterArticles);
