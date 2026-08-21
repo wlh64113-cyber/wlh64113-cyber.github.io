@@ -1,0 +1,31 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Sidebar from '../components/Sidebar.astro';
+
+const articles = await getCollection('articles', ({ data }) => !data.draft);
+const counts = new Map<string, number>();
+articles.forEach((article) => article.data.tags.forEach((tag) => counts.set(tag, (counts.get(tag) || 0) + 1)));
+const tags = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+---
+
+<BaseLayout title="文章标签｜Blog of Even" description="按标签浏览 Blog of Even 的技术文章。">
+  <section class="archive-hero">
+    <h1>文章标签</h1>
+    <p>从关键词出发，快速找到同一主题下的内容。</p>
+  </section>
+
+  <div class="blog-layout">
+    <main class="blog-main">
+      <div class="cloud-grid">
+        {tags.map(([tag, count]) => (
+          <a class="cloud-card" href={`/blog?tag=${encodeURIComponent(tag)}`}>
+            <strong>#{tag}</strong>
+            <span>{count} 篇文章</span>
+          </a>
+        ))}
+      </div>
+    </main>
+    <Sidebar />
+  </div>
+</BaseLayout>
