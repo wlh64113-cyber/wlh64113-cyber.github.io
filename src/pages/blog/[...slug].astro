@@ -17,15 +17,18 @@ interface Props {
 
 const { article } = Astro.props;
 const { Content } = await render(article);
+const categoryLabel = article.data.category === 'Engineering' ? '工程实践' : article.data.category;
+const publishDate = article.data.pubDate.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
 ---
 
-<BaseLayout title={`${article.data.title} · Blog of Even`} description={article.data.description}>
+<BaseLayout title={`${article.data.title}｜Blog of Even`} description={article.data.description}>
   <main class="page article-page">
-    <a class="back-link" href="/blog">← Articles</a>
+    <a class="back-link" href="/blog">← 返回文章列表</a>
     <header class="article-header">
-      <div class="meta-line">
-        <span>{article.data.pubDate.toISOString().slice(0, 10)}</span>
-        <span>{article.data.category}</span>
+      <span class="section-kicker">技术文章</span>
+      <div class="meta-line article-meta">
+        <span>{publishDate}</span>
+        <span>{categoryLabel}</span>
       </div>
       <h1>{article.data.title}</h1>
       <p class="lead">{article.data.description}</p>
@@ -34,8 +37,13 @@ const { Content } = await render(article);
       </div>
     </header>
 
-    <article class="prose markdown-body">
+    <article class="prose markdown-body reading-surface">
       <Content />
     </article>
+
+    <div class="article-end">
+      <span>— 完 —</span>
+      <a class="text-link" href="/blog">继续浏览其他文章 →</a>
+    </div>
   </main>
 </BaseLayout>
