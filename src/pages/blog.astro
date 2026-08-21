@@ -1,93 +1,76 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Sidebar from '../components/Sidebar.astro';
 
 const articles = (await getCollection('articles', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-
-const categories = [...new Set(articles.map((article) => article.data.category))];
 const categoryLabel = (category: string) => category === 'Engineering' ? '工程实践' : category;
 ---
 
 <BaseLayout title="技术文章｜Blog of Even" description="技术文章、学习总结与工程实践沉淀。">
-  <main class="page">
-    <header class="page-hero compact">
-      <span class="section-kicker">文章系统</span>
-      <h1>技术文章</h1>
-      <p class="lead">把零散学习记录整理成可检索、可维护、可长期复用的知识文章。</p>
-      <div class="page-stats">
-        <span><strong>{articles.length}</strong> 篇已发布文章</span>
-        <span><strong>{categories.length}</strong> 个内容分类</span>
-      </div>
-    </header>
+  <section class="archive-hero">
+    <h1>技术文章</h1>
+    <p>把学习过程中的理解、踩坑与实践整理成可以长期回看的文章。</p>
+  </section>
 
-    <section class="content-panel">
-      <div class="toolbar toolbar-panel">
-        <label class="search-wrap">
-          <span aria-hidden="true">⌕</span>
+  <div class="blog-layout">
+    <main class="blog-main">
+      <div class="toolbar-panel">
+        <div class="search-wrap">
+          <span>⌕</span>
           <input id="article-search" class="search-input" type="search" placeholder="搜索标题、分类或标签…" />
-        </label>
-        <div class="chips" aria-label="文章分类">
-          <button class="chip active" data-category="all">全部</button>
-          {categories.map((category) => <button class="chip" data-category={category}>{categoryLabel(category)}</button>)}
         </div>
       </div>
 
-      <section id="article-list" class="article-list">
+      <div id="post-feed" class="post-feed">
         {articles.map((article) => (
-          <a
-            class="article-row"
-            href={`/blog/${article.id}/`}
+          <article
+            class="post-card"
             data-category={article.data.category}
+            data-tags={article.data.tags.join('|')}
             data-search={`${article.data.title} ${article.data.description} ${article.data.category} ${article.data.tags.join(' ')}`.toLowerCase()}
           >
-            <div class="article-row-main">
-              <div class="meta-line">
-                <span>{article.data.pubDate.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                <span>{categoryLabel(article.data.category)}</span>
-              </div>
-              <h2>{article.data.title}</h2>
-              <p>{article.data.description}</p>
-              <div class="tag-list">
-                {article.data.tags.map((tag) => <span class="tag">#{tag}</span>)}
-              </div>
+            <div class="post-meta">
+              <span>发表于 {article.data.pubDate.toLocaleDateString('zh-CN')}</span>
+              <span>·</span>
+              <a href={`/blog?category=${encodeURIComponent(article.data.category)}`}>{categoryLabel(article.data.category)}</a>
             </div>
-            <span class="row-action">阅读全文 <span aria-hidden="true">→</span></span>
-          </a>
+            <h2><a href={`/blog/${article.id}/`}>{article.data.title}</a></h2>
+            <p class="post-excerpt">{article.data.description}</p>
+            <div class="post-tags">
+              {article.data.tags.map((tag) => <a href={`/blog?tag=${encodeURIComponent(tag)}`}>#{tag}</a>)}
+            </div>
+            <a class="read-more" href={`/blog/${article.id}/`}>阅读全文 →</a>
+          </article>
         ))}
-      </section>
-
-      <div id="article-empty" class="empty-state" hidden>
-        <strong>没有找到匹配的文章</strong>
-        <p>换一个关键词或分类试试。</p>
       </div>
-    </section>
-  </main>
+    </main>
+
+    <Sidebar />
+  </div>
 
   <script>
-    const search = document.querySelector('#article-search');
-    const rows = [...document.querySelectorAll('.article-row')];
-    const chips = [...document.querySelectorAll('.chip')];
-    const empty = document.querySelector('#article-empty');
-    let category = 'all';
+    const input = document.querySelector('#article-search');
+    const posts = [...document.querySelectorAll('#post-feed .post-card')];
+    const params = new URLSearchParams(location.search);
+    const selectedTag = params.get('tag');
+    const selectedCategory = params.get('category');
 
-    function filterArticles() {
-      const query = (search?.value || '').trim().toLowerCase();
-      let visibleCount = 0;
-      rows.forEach((row) => {
-        const matchesQuery = !query || row.dataset.search?.includes(query);
-        const matchesCategory = category === 'all' || row.dataset.category === category;
-        row.hidden = !(matchesQuery && matchesCategory);
-        if (!row.hidden) visibleCount += 1;
+    function filterPosts() {
+      const query = (input?.value || '').trim().toLowerCase();
+      posts.forEach((post) => {
+        const matchesText = !query || post.dataset.search?.includes(query);
+        const tags = (post.dataset.tags || '').split('|');
+        const matchesTag = !selectedTag || tags.includes(selectedTag);
+        const matchesCategory = !selectedCategory || post.dataset.category === selectedCategory;
+        post.hidden = !(matchesText && matchesTag && matchesCategory);
       });
-      if (empty) empty.hidden = visibleCount !== 0;
     }
 
-    search?.addEventListener('input', filterArticles);
-    chips.forEach((chip) => chip.addEventListener('click', () => {
-      category = chip.dataset.category || 'all';
-      chips.forEach((item) => item.classList.toggle('active', item === chip));
-      filterArticles();
-    }));
+    if (selectedTag && input) input.placeholder = `当前标签：${selectedTag}，继续搜索…`;
+    if (selectedCategory && input) input.placeholder = `当前分类：${selectedCategory}，继续搜索…`;
+    input?.addEventListener('input', filterPosts);
+    filterPosts();
   </script>
 </BaseLayout>

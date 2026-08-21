@@ -1,0 +1,56 @@
+---
+import { getCollection } from 'astro:content';
+
+const articles = (await getCollection('articles', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const lessons = await getCollection('learning');
+const tags = [...new Set(articles.flatMap((article) => article.data.tags))];
+const categories = [...new Set(articles.map((article) => article.data.category))];
+const categoryLabel = (category: string) => category === 'Engineering' ? '工程实践' : category;
+---
+
+<aside class="blog-sidebar">
+  <section class="sidebar-card profile-card">
+    <div class="profile-avatar">E</div>
+    <h2>Even</h2>
+    <p>记录技术学习、知识沉淀与工程实践。</p>
+    <div class="profile-stats">
+      <a href="/archive"><strong>{articles.length}</strong><span>文章</span></a>
+      <a href="/tags"><strong>{tags.length}</strong><span>标签</span></a>
+      <a href="/categories"><strong>{categories.length}</strong><span>分类</span></a>
+    </div>
+    <a class="sidebar-github" href="https://github.com/wlh64113-cyber" target="_blank" rel="noreferrer">GitHub ↗</a>
+  </section>
+
+  <section class="sidebar-card">
+    <h3>学习系统</h3>
+    <div class="sidebar-learning">
+      <div><strong>{lessons.length}</strong><span>节学习内容</span></div>
+      <a href="/learn">查看学习路线 →</a>
+    </div>
+  </section>
+
+  <section class="sidebar-card">
+    <h3>最新文章</h3>
+    <div class="sidebar-post-list">
+      {articles.slice(0, 5).map((article) => (
+        <a href={`/blog/${article.id}/`}>
+          <span>{article.data.title}</span>
+          <time>{article.data.pubDate.toLocaleDateString('zh-CN')}</time>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="sidebar-card">
+    <h3>热门标签</h3>
+    <div class="sidebar-tags">
+      {tags.slice(0, 12).map((tag) => <a href={`/blog?tag=${encodeURIComponent(tag)}`}>#{tag}</a>)}
+    </div>
+  </section>
+
+  <section class="sidebar-card sidebar-quote">
+    <span>持续学习</span>
+    <p>把零散知识连接起来，把短期记忆变成长期资产。</p>
+  </section>
+</aside>

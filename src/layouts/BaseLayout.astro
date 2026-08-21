@@ -1,5 +1,7 @@
 ---
+import { getCollection } from 'astro:content';
 import '../styles/global.css';
+import '../styles/kyle.css';
 
 interface Props {
   title?: string;
@@ -12,13 +14,16 @@ const {
 } = Astro.props;
 
 const pathname = Astro.url.pathname;
+const articles = (await getCollection('articles', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 const navItems = [
   { href: '/', label: '首页' },
-  { href: '/learn', label: '学习系统' },
-  { href: '/blog', label: '技术文章' },
+  { href: '/archive', label: '归档' },
+  { href: '/tags', label: '标签' },
+  { href: '/categories', label: '分类' },
+  { href: '/learn', label: '学习' },
   { href: '/about', label: '关于' },
 ];
-
 const isActive = (href: string) => href === '/' ? pathname === '/' : pathname.startsWith(href);
 ---
 
@@ -28,44 +33,107 @@ const isActive = (href: string) => href === '/' ? pathname === '/' : pathname.st
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#f7f8fc" />
+    <meta name="theme-color" content="#f5f7fb" />
     <title>{title}</title>
+    <script is:inline>
+      (() => {
+        const saved = localStorage.getItem('even-theme');
+        const dark = saved === 'dark' || (!saved && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+      })();
+    </script>
   </head>
   <body>
-    <div class="background-glow background-glow-one" aria-hidden="true"></div>
-    <div class="background-glow background-glow-two" aria-hidden="true"></div>
-
-    <div class="container site-shell">
-      <header class="site-header">
-        <a class="brand" href="/" aria-label="返回首页">
-          <span class="brand-mark">E</span>
-          <span class="brand-copy">
-            <strong>Blog of Even</strong>
-            <small>技术学习与知识沉淀</small>
-          </span>
+    <header class="blog-header">
+      <div class="blog-header-inner">
+        <a class="blog-brand" href="/">
+          <strong>Blog of Even</strong>
+          <span>学习 · 记录 · 输出</span>
         </a>
 
-        <nav class="site-nav" aria-label="主导航">
+        <nav class="blog-nav" aria-label="主导航">
           {navItems.map((item) => (
-            <a href={item.href} class:list={[{ active: isActive(item.href) }]} aria-current={isActive(item.href) ? 'page' : undefined}>
-              {item.label}
+            <a href={item.href} class:list={[{ active: isActive(item.href) }]}>{item.label}</a>
+          ))}
+        </nav>
+
+        <div class="header-actions">
+          <button id="open-search" class="icon-button" type="button" aria-label="搜索">⌕</button>
+          <button id="theme-toggle" class="icon-button" type="button" aria-label="切换昼夜模式">◐</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="blog-container">
+      <slot />
+    </div>
+
+    <footer class="blog-footer">
+      <p>© 2026 Even · Blog of Even</p>
+      <p>持续学习 · 持续输出 · 持续构建</p>
+    </footer>
+
+    <div id="search-overlay" class="search-overlay" hidden>
+      <div class="search-dialog" role="dialog" aria-modal="true" aria-label="搜索文章">
+        <div class="search-dialog-head">
+          <strong>搜索文章</strong>
+          <button id="close-search" class="icon-button" type="button" aria-label="关闭">×</button>
+        </div>
+        <input id="global-search" class="global-search-input" type="search" placeholder="输入标题、分类或标签…" autocomplete="off" />
+        <div id="global-search-results" class="global-search-results">
+          {articles.map((article) => (
+            <a
+              href={`/blog/${article.id}/`}
+              data-search={`${article.data.title} ${article.data.description} ${article.data.category} ${article.data.tags.join(' ')}`.toLowerCase()}
+            >
+              <strong>{article.data.title}</strong>
+              <span>{article.data.pubDate.toLocaleDateString('zh-CN')} · {article.data.category}</span>
             </a>
           ))}
-          <a class="github-link" href="https://github.com/wlh64113-cyber" target="_blank" rel="noreferrer">
-            GitHub <span aria-hidden="true">↗</span>
-          </a>
-        </nav>
-      </header>
-
-      <slot />
-
-      <footer class="site-footer">
-        <div>
-          <strong>Blog of Even</strong>
-          <p>持续学习 · 持续输出 · 持续构建</p>
         </div>
-        <span>© 2026 Even · 使用 Astro 与 GitHub Pages 构建</span>
-      </footer>
+      </div>
     </div>
+
+    <script>
+      const root = document.documentElement;
+      const themeButton = document.querySelector('#theme-toggle');
+      themeButton?.addEventListener('click', () => {
+        const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+        root.dataset.theme = next;
+        localStorage.setItem('even-theme', next);
+      });
+
+      const overlay = document.querySelector('#search-overlay');
+      const openSearch = document.querySelector('#open-search');
+      const closeSearch = document.querySelector('#close-search');
+      const searchInput = document.querySelector('#global-search');
+      const searchRows = [...document.querySelectorAll('#global-search-results a')];
+
+      const showSearch = () => {
+        if (!overlay) return;
+        overlay.hidden = false;
+        document.body.classList.add('search-open');
+        setTimeout(() => searchInput?.focus(), 0);
+      };
+      const hideSearch = () => {
+        if (!overlay) return;
+        overlay.hidden = true;
+        document.body.classList.remove('search-open');
+      };
+      openSearch?.addEventListener('click', showSearch);
+      closeSearch?.addEventListener('click', hideSearch);
+      overlay?.addEventListener('click', (event) => { if (event.target === overlay) hideSearch(); });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') hideSearch();
+        if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+          event.preventDefault();
+          showSearch();
+        }
+      });
+      searchInput?.addEventListener('input', () => {
+        const query = searchInput.value.trim().toLowerCase();
+        searchRows.forEach((row) => row.hidden = !!query && !row.dataset.search?.includes(query));
+      });
+    </script>
   </body>
 </html>

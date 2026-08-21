@@ -1,0 +1,32 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Sidebar from '../components/Sidebar.astro';
+
+const articles = await getCollection('articles', ({ data }) => !data.draft);
+const counts = new Map<string, number>();
+articles.forEach((article) => counts.set(article.data.category, (counts.get(article.data.category) || 0) + 1));
+const categories = [...counts.entries()].sort((a, b) => b[1] - a[1]);
+const categoryLabel = (category: string) => category === 'Engineering' ? '工程实践' : category;
+---
+
+<BaseLayout title="文章分类｜Blog of Even" description="按分类浏览 Blog of Even 的技术文章。">
+  <section class="archive-hero">
+    <h1>文章分类</h1>
+    <p>按主题领域整理文章，让知识结构更清晰。</p>
+  </section>
+
+  <div class="blog-layout">
+    <main class="blog-main">
+      <div class="cloud-grid">
+        {categories.map(([category, count]) => (
+          <a class="cloud-card" href={`/blog?category=${encodeURIComponent(category)}`}>
+            <strong>{categoryLabel(category)}</strong>
+            <span>{count} 篇文章</span>
+          </a>
+        ))}
+      </div>
+    </main>
+    <Sidebar />
+  </div>
+</BaseLayout>
