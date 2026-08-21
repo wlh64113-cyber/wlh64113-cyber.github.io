@@ -1,41 +1,72 @@
 ---
-import '../styles/global.css';
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const articles = (await getCollection('articles', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const categories = [...new Set(articles.map((article) => article.data.category))];
 ---
 
-<!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>Blog · Blog of Even</title>
-  </head>
-  <body>
-    <div class="container">
-      <header class="site-header">
-        <a class="brand" href="/">Blog of Even</a>
-        <nav>
-          <a href="/about">About</a>
-          <a href="/blog">Blog</a>
-          <a href="https://github.com/wlh64113-cyber">GitHub</a>
-        </nav>
-      </header>
-      <main class="page">
-        <p class="eyebrow">Notes & Articles</p>
-        <h1>Blog</h1>
-        <div class="grid">
-          <article class="card">
-            <p class="eyebrow">2026-08-21</p>
-            <h3>Blog of Even is online</h3>
-            <p>GitHub Pages + Astro 的第一版博客已经搭建完成。</p>
-          </article>
-          <article class="card">
-            <p class="eyebrow">Coming soon</p>
-            <h3>Research notes</h3>
-            <p>后续可以把科研记录、论文分析和项目总结以 Markdown 文章形式加入这里。</p>
-          </article>
-        </div>
-      </main>
-      <footer>© 2026 Even</footer>
+<BaseLayout title="Articles · Blog of Even" description="技术文章、科研笔记与工程实践。">
+  <main class="page">
+    <p class="eyebrow">Knowledge Base</p>
+    <h1>Articles</h1>
+    <p class="lead">把零散学习记录沉淀为长期可检索、可维护的技术文章。</p>
+
+    <div class="toolbar">
+      <input id="article-search" class="search-input" type="search" placeholder="搜索标题、分类或标签…" />
+      <div class="chips">
+        <button class="chip active" data-category="all">All</button>
+        {categories.map((category) => <button class="chip" data-category={category}>{category}</button>)}
+      </div>
     </div>
-  </body>
-</html>
+
+    <section id="article-list" class="article-list">
+      {articles.map((article) => (
+        <a
+          class="article-row"
+          href={`/blog/${article.id}/`}
+          data-category={article.data.category}
+          data-search={`${article.data.title} ${article.data.description} ${article.data.category} ${article.data.tags.join(' ')}`.toLowerCase()}
+        >
+          <div>
+            <div class="meta-line">
+              <span>{article.data.pubDate.toISOString().slice(0, 10)}</span>
+              <span>{article.data.category}</span>
+            </div>
+            <h2>{article.data.title}</h2>
+            <p>{article.data.description}</p>
+            <div class="tag-list">
+              {article.data.tags.map((tag) => <span class="tag">#{tag}</span>)}
+            </div>
+          </div>
+          <span class="arrow">→</span>
+        </a>
+      ))}
+    </section>
+  </main>
+
+  <script>
+    const search = document.querySelector('#article-search');
+    const rows = [...document.querySelectorAll('.article-row')];
+    const chips = [...document.querySelectorAll('.chip')];
+    let category = 'all';
+
+    function filterArticles() {
+      const query = (search?.value || '').trim().toLowerCase();
+      rows.forEach((row) => {
+        const matchesQuery = !query || row.dataset.search?.includes(query);
+        const matchesCategory = category === 'all' || row.dataset.category === category;
+        row.hidden = !(matchesQuery && matchesCategory);
+      });
+    }
+
+    search?.addEventListener('input', filterArticles);
+    chips.forEach((chip) => chip.addEventListener('click', () => {
+      category = chip.dataset.category || 'all';
+      chips.forEach((item) => item.classList.toggle('active', item === chip));
+      filterArticles();
+    }));
+  </script>
+</BaseLayout>

@@ -1,0 +1,78 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const lessons = await getCollection('learning');
+  return lessons.map((lesson) => ({
+    params: { slug: lesson.id },
+    props: { lesson },
+  }));
+}
+
+interface Props {
+  lesson: CollectionEntry<'learning'>;
+}
+
+const { lesson } = Astro.props;
+const { Content } = await render(lesson);
+---
+
+<BaseLayout title={`${lesson.data.title} · Learn · Blog of Even`} description={lesson.data.description}>
+  <main class="page article-page">
+    <a class="back-link" href="/learn">← Learning system</a>
+    <header class="article-header">
+      <div class="meta-line">
+        <span>{lesson.data.track}</span>
+        <span>{lesson.data.level}</span>
+        {lesson.data.estimatedMinutes && <span>≈ {lesson.data.estimatedMinutes} min</span>}
+      </div>
+      <h1>{lesson.data.title}</h1>
+      <p class="lead">{lesson.data.description}</p>
+      <div class="lesson-actions">
+        <button id="complete-lesson" class="button" data-learning-id={lesson.id}>标记为已完成</button>
+        <span id="complete-state" class="status-text"></span>
+      </div>
+    </header>
+
+    <article class="prose markdown-body">
+      <Content />
+    </article>
+  </main>
+
+  <script>
+    const STORAGE_KEY = 'blog-of-even-learning-progress-v1';
+    const button = document.querySelector('#complete-lesson');
+    const state = document.querySelector('#complete-state');
+    const lessonId = button?.dataset.learningId;
+
+    function loadCompleted() {
+      try {
+        return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
+      } catch {
+        return new Set();
+      }
+    }
+
+    let completed = loadCompleted();
+
+    function renderState() {
+      if (!lessonId || !button || !state) return;
+      const done = completed.has(lessonId);
+      button.textContent = done ? '取消完成' : '标记为已完成';
+      button.classList.toggle('secondary', done);
+      state.textContent = done ? '✓ 已完成，本浏览器会保存进度' : '';
+    }
+
+    button?.addEventListener('click', () => {
+      if (!lessonId) return;
+      if (completed.has(lessonId)) completed.delete(lessonId);
+      else completed.add(lessonId);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([...completed]));
+      renderState();
+    });
+
+    renderState();
+  </script>
+</BaseLayout>
