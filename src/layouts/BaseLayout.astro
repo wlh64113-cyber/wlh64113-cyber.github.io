@@ -7,34 +7,65 @@ interface Props {
 }
 
 const {
-  title = 'Blog of Even',
-  description = '技术学习、科研笔记与工程实践。',
+  title = 'Blog of Even｜技术学习与知识沉淀',
+  description = '一个持续生长的个人技术学习系统，记录学习路线、技术文章与实践总结。',
 } = Astro.props;
+
+const pathname = Astro.url.pathname;
+const navItems = [
+  { href: '/', label: '首页' },
+  { href: '/learn', label: '学习系统' },
+  { href: '/blog', label: '技术文章' },
+  { href: '/about', label: '关于' },
+];
+
+const isActive = (href: string) => href === '/' ? pathname === '/' : pathname.startsWith(href);
 ---
 
 <!doctype html>
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    <meta name="theme-color" content="#f7f8fc" />
     <title>{title}</title>
   </head>
   <body>
-    <div class="container">
+    <div class="background-glow background-glow-one" aria-hidden="true"></div>
+    <div class="background-glow background-glow-two" aria-hidden="true"></div>
+
+    <div class="container site-shell">
       <header class="site-header">
-        <a class="brand" href="/">Blog of Even</a>
-        <nav>
-          <a href="/learn">Learn</a>
-          <a href="/blog">Articles</a>
-          <a href="/about">About</a>
-          <a href="https://github.com/wlh64113-cyber" target="_blank" rel="noreferrer">GitHub</a>
+        <a class="brand" href="/" aria-label="返回首页">
+          <span class="brand-mark">E</span>
+          <span class="brand-copy">
+            <strong>Blog of Even</strong>
+            <small>技术学习与知识沉淀</small>
+          </span>
+        </a>
+
+        <nav class="site-nav" aria-label="主导航">
+          {navItems.map((item) => (
+            <a href={item.href} class:list={[{ active: isActive(item.href) }]} aria-current={isActive(item.href) ? 'page' : undefined}>
+              {item.label}
+            </a>
+          ))}
+          <a class="github-link" href="https://github.com/wlh64113-cyber" target="_blank" rel="noreferrer">
+            GitHub <span aria-hidden="true">↗</span>
+          </a>
         </nav>
       </header>
 
       <slot />
 
-      <footer>© 2026 Even · Built with Astro & GitHub Pages</footer>
+      <footer class="site-footer">
+        <div>
+          <strong>Blog of Even</strong>
+          <p>持续学习 · 持续输出 · 持续构建</p>
+        </div>
+        <span>© 2026 Even · 使用 Astro 与 GitHub Pages 构建</span>
+      </footer>
     </div>
   </body>
 </html>
