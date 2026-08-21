@@ -1,0 +1,77 @@
+title: Blog of Even
+subtitle: 技术学习 · 科研阅读 · 工程实践
+description: 记录技术学习、科研阅读、工程实践与长期知识沉淀。
+keywords: 技术博客,学习笔记,科研,AI,生物信息学,Git,编程
+author: Even
+language: zh-CN
+timezone: Asia/Shanghai
+
+url: https://wlh64113-cyber.github.io
+permalink: :year/:month/:day/:title/
+permalink_defaults:
+pretty_urls:
+  trailing_index: false
+  trailing_html: false
+
+source_dir: source
+public_dir: public
+tag_dir: tags
+archive_dir: archives
+category_dir: categories
+code_dir: downloads/code
+i18n_dir: :lang
+skip_render:
+
+new_post_name: :title.md
+default_layout: post
+titlecase: false
+external_link:
+  enable: true
+  field: site
+  exclude:
+filename_case: 0
+render_drafts: false
+post_asset_folder: false
+relative_link: false
+future: true
+highlight:
+  enable: true
+  line_number: true
+  auto_detect: false
+  tab_replace: ''
+  wrap: true
+  hljs: false
+prismjs:
+  enable: false
+
+index_generator:
+  path: ''
+  per_page: 10
+  order_by: -date
+
+per_page: 10
+pagination_dir: page
+
+include:
+exclude:
+ignore:
+
+theme: butterfly
+
+search:
+  path: search.xml
+  field: post
+  content: true
+  format: html
+
+marked:
+  gfm: true
+  breaks: false
+  prependRoot: true
+  postAsset: false
+  external_link:
+    enable: true
+    exclude: []
+    nofollow: false
+
+meta_generator: true
