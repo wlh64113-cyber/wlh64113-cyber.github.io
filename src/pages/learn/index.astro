@@ -1,0 +1,139 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const lessons = (await getCollection('learning'))
+  .sort((a, b) => a.data.track.localeCompare(b.data.track) || a.data.order - b.data.order);
+
+const tracks = [...new Set(lessons.map((lesson) => lesson.data.track))];
+---
+
+<BaseLayout title="Learn · Blog of Even" description="结构化技术学习路线与进度追踪。">
+  <main class="page">
+    <p class="eyebrow">Learning System</p>
+    <h1>Learn</h1>
+    <p class="lead">把“看过”变成“学完”：按学习路线组织知识，并记录每一节的完成进度。</p>
+
+    <section class="learning-dashboard">
+      <div>
+        <span class="metric-label">Overall progress</span>
+        <strong id="progress-text">0 / {lessons.length}</strong>
+      </div>
+      <div class="progress-track" aria-label="学习进度">
+        <div id="progress-fill" class="progress-fill"></div>
+      </div>
+    </section>
+
+    <div class="toolbar">
+      <input id="lesson-search" class="search-input" type="search" placeholder="搜索课程、标签或学习路线…" />
+      <select id="track-filter" class="select-input">
+        <option value="all">全部学习路线</option>
+        {tracks.map((track) => <option value={track}>{track}</option>)}
+      </select>
+    </div>
+
+    <div id="lesson-list">
+      {tracks.map((track) => (
+        <section class="track-section" data-track-section={track}>
+          <div class="track-heading">
+            <div>
+              <p class="eyebrow">Track</p>
+              <h2>{track}</h2>
+            </div>
+            <span>{lessons.filter((lesson) => lesson.data.track === track).length} lessons</span>
+          </div>
+
+          <div class="learning-list">
+            {lessons.filter((lesson) => lesson.data.track === track).map((lesson) => (
+              <article
+                class="learning-row"
+                data-learning-id={lesson.id}
+                data-track={lesson.data.track}
+                data-search={`${lesson.data.title} ${lesson.data.description} ${lesson.data.track} ${lesson.data.tags.join(' ')}`.toLowerCase()}
+              >
+                <label class="complete-control" title="标记完成">
+                  <input class="complete-toggle" type="checkbox" value={lesson.id} />
+                  <span></span>
+                </label>
+                <a class="learning-link" href={`/learn/${lesson.id}/`}>
+                  <div class="lesson-order">{String(lesson.data.order).padStart(2, '0')}</div>
+                  <div class="lesson-content">
+                    <div class="meta-line">
+                      <span>{lesson.data.level}</span>
+                      {lesson.data.estimatedMinutes && <span>≈ {lesson.data.estimatedMinutes} min</span>}
+                    </div>
+                    <h3>{lesson.data.title}</h3>
+                    <p>{lesson.data.description}</p>
+                    <div class="tag-list">
+                      {lesson.data.tags.map((tag) => <span class="tag">#{tag}</span>)}
+                    </div>
+                  </div>
+                  <span class="arrow">→</span>
+                </a>
+              </article>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  </main>
+
+  <script>
+    const STORAGE_KEY = 'blog-of-even-learning-progress-v1';
+    const toggles = [...document.querySelectorAll('.complete-toggle')];
+    const rows = [...document.querySelectorAll('.learning-row')];
+    const trackSections = [...document.querySelectorAll('.track-section')];
+    const progressText = document.querySelector('#progress-text');
+    const progressFill = document.querySelector('#progress-fill');
+    const search = document.querySelector('#lesson-search');
+    const trackFilter = document.querySelector('#track-filter');
+
+    function loadCompleted() {
+      try {
+        return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
+      } catch {
+        return new Set();
+      }
+    }
+
+    let completed = loadCompleted();
+
+    function renderProgress() {
+      toggles.forEach((toggle) => {
+        toggle.checked = completed.has(toggle.value);
+        toggle.closest('.learning-row')?.classList.toggle('completed', toggle.checked);
+      });
+      const total = toggles.length;
+      const done = toggles.filter((toggle) => toggle.checked).length;
+      if (progressText) progressText.textContent = `${done} / ${total}`;
+      if (progressFill) progressFill.style.width = `${total ? (done / total) * 100 : 0}%`;
+    }
+
+    toggles.forEach((toggle) => toggle.addEventListener('change', () => {
+      if (toggle.checked) completed.add(toggle.value);
+      else completed.delete(toggle.value);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([...completed]));
+      renderProgress();
+    }));
+
+    function filterLessons() {
+      const query = (search?.value || '').trim().toLowerCase();
+      const activeTrack = trackFilter?.value || 'all';
+
+      rows.forEach((row) => {
+        const matchesQuery = !query || row.dataset.search?.includes(query);
+        const matchesTrack = activeTrack === 'all' || row.dataset.track === activeTrack;
+        row.hidden = !(matchesQuery && matchesTrack);
+      });
+
+      trackSections.forEach((section) => {
+        const visible = [...section.querySelectorAll('.learning-row')].some((row) => !row.hidden);
+        section.hidden = !visible;
+      });
+    }
+
+    search?.addEventListener('input', filterLessons);
+    trackFilter?.addEventListener('change', filterLessons);
+    renderProgress();
+  </script>
+</BaseLayout>
