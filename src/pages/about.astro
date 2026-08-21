@@ -1,34 +1,50 @@
 ---
-import '../styles/global.css';
+import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>About · Blog of Even</title>
-  </head>
-  <body>
-    <div class="container">
-      <header class="site-header">
-        <a class="brand" href="/">Blog of Even</a>
-        <nav>
-          <a href="/about">About</a>
-          <a href="/blog">Blog</a>
-          <a href="https://github.com/wlh64113-cyber">GitHub</a>
-        </nav>
-      </header>
-      <main class="page">
-        <p class="eyebrow">About</p>
-        <h1>About Even</h1>
-        <div class="prose">
-          <p>欢迎来到 Blog of Even。</p>
-          <p>这里主要记录科研探索、AI 与生物信息学、多模态表示学习，以及软件开发相关的学习和实践。</p>
-          <p>这个页面后续可以继续补充个人简介、研究方向、教育经历、联系方式和项目经历。</p>
-        </div>
-      </main>
-      <footer>© 2026 Even</footer>
-    </div>
-  </body>
-</html>
+<BaseLayout title="关于｜Blog of Even" description="关于 Blog of Even：一个用于技术学习、知识沉淀与项目实践的个人空间。">
+  <main class="page">
+    <header class="page-hero compact">
+      <span class="section-kicker">关于这个网站</span>
+      <h1>一个持续生长的个人技术空间</h1>
+      <p class="lead">
+        Blog of Even 用来记录技术学习过程、整理长期文章，并把零散知识逐步组织成可复用的个人知识体系。
+      </p>
+    </header>
+
+    <section class="about-grid">
+      <article class="about-card featured">
+        <span class="feature-icon">源</span>
+        <span class="card-label">为什么建立它</span>
+        <h2>不只是记录，而是建立长期知识结构</h2>
+        <p>学习内容如果只停留在收藏夹和临时笔记里，很难形成真正可调用的能力。这里希望把学习路线、文章沉淀和项目实践串联起来。</p>
+      </article>
+
+      <article class="about-card">
+        <span class="feature-icon">学</span>
+        <span class="card-label">学习系统</span>
+        <h3>结构化组织学习过程</h3>
+        <p>围绕技术主题建立路线、课程顺序、难度和进度，让每一次学习都知道自己处于哪里。</p>
+      </article>
+
+      <article class="about-card">
+        <span class="feature-icon">文</span>
+        <span class="card-label">文章系统</span>
+        <h3>把理解写成长期内容</h3>
+        <p>通过 Markdown 文章记录技术原理、实践总结和知识复盘，让内容能够持续维护和检索。</p>
+      </article>
+
+      <article class="about-card">
+        <span class="feature-icon">码</span>
+        <span class="card-label">技术实现</span>
+        <h3>简单、透明、可持续维护</h3>
+        <p>站点使用 Astro 构建，内容保存在 GitHub，通过 GitHub Actions 自动构建并部署到 GitHub Pages。</p>
+      </article>
+    </section>
+
+    <section class="section about-quote">
+      <span class="section-kicker">长期目标</span>
+      <blockquote>让学过的知识可以被找到，让理解过的内容可以被复用，让做过的项目可以持续积累。</blockquote>
+    </section>
+  </main>
+</BaseLayout>
