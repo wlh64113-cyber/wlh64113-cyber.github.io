@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import '../styles/global.css';
-import '../styles/kyle.css';
+import '../styles/cyborg.css';
 
 interface Props {
   title?: string;
@@ -14,15 +14,16 @@ const {
 } = Astro.props;
 
 const pathname = Astro.url.pathname;
+const isHome = pathname === '/';
 const articles = (await getCollection('articles', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 const navItems = [
-  { href: '/', label: '首页' },
-  { href: '/archive', label: '归档' },
-  { href: '/tags', label: '标签' },
-  { href: '/categories', label: '分类' },
-  { href: '/learn', label: '学习' },
-  { href: '/about', label: '关于' },
+  { href: '/', label: '首页', icon: '⌂' },
+  { href: '/archive', label: '归档', icon: '◷' },
+  { href: '/tags', label: '标签', icon: '#' },
+  { href: '/categories', label: '分类', icon: '▦' },
+  { href: '/learn', label: '学习', icon: '✦' },
+  { href: '/about', label: '关于', icon: '◎' },
 ];
 const isActive = (href: string) => href === '/' ? pathname === '/' : pathname.startsWith(href);
 ---
@@ -33,7 +34,7 @@ const isActive = (href: string) => href === '/' ? pathname === '/' : pathname.st
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#f5f7fb" />
+    <meta name="theme-color" content="#8fbc8f" />
     <title>{title}</title>
     <script is:inline>
       (() => {
@@ -43,22 +44,23 @@ const isActive = (href: string) => href === '/' ? pathname === '/' : pathname.st
       })();
     </script>
   </head>
-  <body>
+  <body class:list={[{ 'is-home': isHome }]}> 
     <header class="blog-header">
       <div class="blog-header-inner">
-        <a class="blog-brand" href="/">
+        <a class="blog-brand" href="/" aria-label="Blog of Even 首页">
           <strong>Blog of Even</strong>
-          <span>学习 · 记录 · 输出</span>
         </a>
 
         <nav class="blog-nav" aria-label="主导航">
           {navItems.map((item) => (
-            <a href={item.href} class:list={[{ active: isActive(item.href) }]}>{item.label}</a>
+            <a href={item.href} class:list={[{ active: isActive(item.href) }]}>
+              <span class="nav-icon" aria-hidden="true">{item.icon}</span>{item.label}
+            </a>
           ))}
         </nav>
 
         <div class="header-actions">
-          <button id="open-search" class="icon-button" type="button" aria-label="搜索">⌕</button>
+          <button id="open-search" class="icon-button" type="button" aria-label="搜索" title="搜索（Ctrl/Cmd + K）">⌕</button>
           <button id="theme-toggle" class="icon-button" type="button" aria-label="切换昼夜模式">◐</button>
         </div>
       </div>
@@ -82,10 +84,7 @@ const isActive = (href: string) => href === '/' ? pathname === '/' : pathname.st
         <input id="global-search" class="global-search-input" type="search" placeholder="输入标题、分类或标签…" autocomplete="off" />
         <div id="global-search-results" class="global-search-results">
           {articles.map((article) => (
-            <a
-              href={`/blog/${article.id}/`}
-              data-search={`${article.data.title} ${article.data.description} ${article.data.category} ${article.data.tags.join(' ')}`.toLowerCase()}
-            >
+            <a href={`/blog/${article.id}/`} data-search={`${article.data.title} ${article.data.description} ${article.data.category} ${article.data.tags.join(' ')}`.toLowerCase()}>
               <strong>{article.data.title}</strong>
               <span>{article.data.pubDate.toLocaleDateString('zh-CN')} · {article.data.category}</span>
             </a>
@@ -93,6 +92,8 @@ const isActive = (href: string) => href === '/' ? pathname === '/' : pathname.st
         </div>
       </div>
     </div>
+
+    <button id="back-to-top" class="back-to-top" type="button" aria-label="返回顶部">↑</button>
 
     <script>
       const root = document.documentElement;
@@ -108,7 +109,6 @@ const isActive = (href: string) => href === '/' ? pathname === '/' : pathname.st
       const closeSearch = document.querySelector('#close-search');
       const searchInput = document.querySelector('#global-search');
       const searchRows = [...document.querySelectorAll('#global-search-results a')];
-
       const showSearch = () => {
         if (!overlay) return;
         overlay.hidden = false;
@@ -134,6 +134,12 @@ const isActive = (href: string) => href === '/' ? pathname === '/' : pathname.st
         const query = searchInput.value.trim().toLowerCase();
         searchRows.forEach((row) => row.hidden = !!query && !row.dataset.search?.includes(query));
       });
+
+      const backTop = document.querySelector('#back-to-top');
+      const syncBackTop = () => backTop?.classList.toggle('visible', window.scrollY > 420);
+      window.addEventListener('scroll', syncBackTop, { passive: true });
+      backTop?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+      syncBackTop();
     </script>
   </body>
 </html>
